@@ -1,5 +1,7 @@
 package com.babuwyt.carrier.ui.activity;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -9,10 +11,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.babuwyt.carrier.R;
 import com.babuwyt.carrier.base.BaseActivity;
@@ -23,19 +29,23 @@ import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 
+import java.util.ArrayList;
+
 @ContentView(R.layout.activity_main)
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    @ViewInject(R.id.toolbar)
-    Toolbar toolbar;
-    @ViewInject(R.id.springview)
-    SpringView springview;
+//    @ViewInject(R.id.toolbar)
+//    Toolbar toolbar;
+//    @ViewInject(R.id.springview)
+//    SpringView springview;
     @ViewInject(R.id.fab)
     FloatingActionButton fab;
     @ViewInject(R.id.drawer_layout)
     DrawerLayout drawer;
     @ViewInject(R.id.listview)
     ListView listview;
+    private ArrayList<String> mList;
+    private TestAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,19 +57,35 @@ public class MainActivity extends BaseActivity
 //        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 //        navigationView.setNavigationItemSelectedListener(this);
     }
+    @SuppressLint("ResourceAsColor")
     private void init(){
-        springview.setHeader(new DefaultHeader(this));
-        springview.setListener(new SpringView.OnFreshListener() {
-            @Override
-            public void onRefresh() {
-                springview.onFinishFreshAndLoad();
-            }
+//        springview.setHeader(new DefaultHeader(this));
+//        springview.setListener(new SpringView.OnFreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                mList.add("1");
+//                mList.add("1");
+//                mList.add("1");
+//                adapter.notifyDataSetChanged();
+//                springview.onFinishFreshAndLoad();
+//            }
+//
+//            @Override
+//            public void onLoadmore() {
+//                springview.onFinishFreshAndLoad();
+//            }
+//        });
 
-            @Override
-            public void onLoadmore() {
-                springview.onFinishFreshAndLoad();
-            }
-        });
+        TextView emptyView = new TextView(this);
+        emptyView.setTextColor(R.color.black);
+        emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        emptyView.setText("还没有可以跟踪的订单！");
+        emptyView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+        emptyView.setVisibility(View.VISIBLE);
+        ((ViewGroup)listview.getParent()).addView(emptyView);
+        mList=new ArrayList<String>();
+        adapter=new TestAdapter(this);
+        listview.setAdapter(adapter);
     }
     @Event(value = {R.id.fab})
     private void getE(View v){
@@ -68,6 +94,34 @@ public class MainActivity extends BaseActivity
                 Snackbar.make(v, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 break;
+        }
+    }
+
+    class TestAdapter extends BaseAdapter{
+        Context context;
+        public TestAdapter(Context context){
+            this.context=context;
+        }
+        @Override
+        public int getCount() {
+            return mList.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return i;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            TextView textView=new TextView(MainActivity.this);
+            textView.setText(i+"测试一下");
+            return textView;
         }
     }
 
